@@ -1,0 +1,9 @@
+{
+  "name": "Tweet-Gram-Weather-Map",
+  "description": "a twitter, instagram, weather (wunderground), and google maps mashup",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.x"
+  }
+}
