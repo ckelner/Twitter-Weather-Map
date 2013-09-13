@@ -2,7 +2,8 @@ var app = {};
 app.user = {
   lat : "",
   lon : "",
-  address : ""
+  address : "",
+  addr : null
 };
 app.init = function() {
   app.fillMapHeight();
@@ -16,6 +17,7 @@ app.onGeoSuccess = function(location) {
   app.user.lat = location.coords.latitude;
   app.user.lon = location.coords.longitude;
   app.user.address = location.formattedAddress
+  app.user.addr = location.address
   app.initGoogleMaps();
 }
 app.onGeoError = function(location) {
