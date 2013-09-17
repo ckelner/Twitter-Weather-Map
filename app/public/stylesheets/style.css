@@ -25,6 +25,13 @@ p {
   padding-left: 15px;
 }
 #container {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  float: left;
+}
+#container, #tweet_map {
+  width: 47%;
+}
+#tweet_map {
+  position: relative;
+  float: right;
 }

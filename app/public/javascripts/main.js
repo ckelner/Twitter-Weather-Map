@@ -4,15 +4,28 @@ app.user = {
   lon : "",
   address : "",
   addr : null
-};
+}
 app.init = function() {
   app.fillMapHeight();
-  //app.getLocation();
-  geolocator.locate(app.onGeoSuccess, app.onGeoError, true, { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }, null);
-};
+  geolocator.locate( 
+    app.onGeoSuccess,
+    app.onGeoError,
+    true,
+    {
+      enableHighAccuracy: true,
+      timeout: 3000,
+      maximumAge: 0
+    },
+    null
+  );
+  app.processTweetData();
+}
 app.fillMapHeight = function() {
   $("#container").css("height", $(window).height() - $('#container').offset().top - 40);
-};
+  $("#tweet_map").css("height", $(window).height() - $('#tweet_map').offset().top - 40);
+  // why???
+  $("#tweet_map").css("top", "-10px");
+}
 app.onGeoSuccess = function(location) {
   app.user.lat = location.coords.latitude;
   app.user.lon = location.coords.longitude;
@@ -35,6 +48,21 @@ app.printUserAddress = function(count) {
   if( app.user.address != null && app.user.address != "" ) {
     $("p#address").html(" - from <i>" + app.user.address + "</i>");
   }
+}
+app.processTweetData = function() {
+    var socket = io.connect(window.location.hostname);
+    socket.on('data', function(tweet) {
+      $("#tweet_map").prepend(
+        "<div class='tweet'>" +
+          "<span class='tweet_text'>" +
+            "tweet: " + tweet.text +
+          "</span>" +
+          "<span class='tweet_img'>" +
+            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+          "</span>" +
+        "</div>"
+      );
+    });
 }
 // on ready
 $(document).ready(function() {
