@@ -81,7 +81,7 @@ app.processInstagramData = function() {
       );
     }
   });
-  socket.on('instagram', function(data) {
+  app.socket.on('instagram', function(data) {
     var url = data.show;
     $.ajax({
         url: url,
