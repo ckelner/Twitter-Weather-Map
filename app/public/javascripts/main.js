@@ -86,11 +86,31 @@ app.processTweetData = function() {
           tweet.place.country;
       }
       htmlStr += "</span>";
-      if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
-        htmlStr += "<br><span class='tweet_img'>" +
-          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
-            "</span>" +
-          "</div><br><br>";
+      /*
+        entities: Object
+          urls: Array[1]
+            0: Object
+              display_url: "instagram.com/p/fQdZZAkuBT/"
+              expanded_url: "http://instagram.com/p/fQdZZAkuBT/"
+              indices: Array[2]
+              url: "http://t.co/vkeYi20y7l"
+      */
+      if( tweet.entities ) {
+        if( tweet.entities.urls && tweet.entities.urls.length > 0 ) {
+          if( tweet.entities.urls[0].expanded_url ) {
+            htmlStr += "<br><span class='tweet_link'><a href='" +
+              tweet.entities.urls[0].expanded_url + "'>" +
+              tweet.entities.urls[0].expanded_url + "</a></span><br><br>";
+          }
+        }
+        if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
+          htmlStr += "<br><span class='tweet_img'>" +
+            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+              "</span>" +
+            "</div><br><br>";
+        } else {
+          htmlStr += "</div><br><br>";
+        }
       } else {
         htmlStr += "</div><br><br>";
       }
