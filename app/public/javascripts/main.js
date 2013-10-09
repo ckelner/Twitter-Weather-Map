@@ -68,7 +68,7 @@ app.processTweetData = function() {
 app.processInstagramData = function() {
   app.socket.on('firstShow', function (data) {
     var size = data.firstShow.length
-    for(int i=0;i<size;i++){
+    for(var i=0;i<size;i++){
       $("#tweet_map").prepend(
         "<div class='tweet'>" +
           "<span class='tweet_text'>" +
