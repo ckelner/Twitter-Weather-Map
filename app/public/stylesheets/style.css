@@ -29,7 +29,8 @@ p {
   float: left;
 }
 #container, #tweet_map {
-  width: 47%;
+  /*width: 47%;*/
+  width: 100%;
 }
 #tweet_map {
   position: relative;
