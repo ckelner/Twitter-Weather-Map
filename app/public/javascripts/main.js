@@ -69,15 +69,9 @@ app.processInstagramData = function() {
   app.socket.on('firstShow', function (data) {
     var size = data.firstShow.length
     for(var i=0;i<size;i++){
-      $("#tweet_map").prepend(
-        "<div class='tweet'>" +
-          "<span class='tweet_text'>" +
-            "INSTAGRAM: " + (data.firstShow[i].caption == null ? '' : data.firstShow[i].caption.text) +
-          "</span>" +
-          "<span class='tweet_img'>" +
-            "<img src='" + data.firstShow[i].images.standard_resolution.url + "'/>" +
-          "</span>" +
-        "</div>"
+      app.addInstaGramPhotos(
+        (data.firstShow[i].caption == null ? '' : data.firstShow[i].caption.text),
+        data.firstShow[i].images.standard_resolution.url
       );
     }
   });
@@ -89,10 +83,28 @@ app.processInstagramData = function() {
         crossDomain: true,
         dataType: 'jsonp'
     }).done(function (data) {
-        alert(data);
+        var size = data.data.length
+        for(var i=0;i<size;i++){
+          app.addInstaGramPhotos(
+            (data.data[i].caption == null ? '' : data.firstShow[i].caption.text),
+            data.data[i].images.standard_resolution.url
+          );
+        }
     }); 
   });
-},
+}
+app.addInstaGramPhotos = function(text, img_url) {
+  $("#tweet_map").prepend(
+    "<div class='tweet'>" +
+      "<span class='tweet_text'>" +
+        "INSTAGRAM: " + text +
+      "</span>" +
+      "<span class='tweet_img'>" +
+        "<img src='" + img_url + "'/>" +
+      "</span>" +
+    "</div>"
+  );
+}
 // on ready
 $(document).ready(function() {
   app.init();
