@@ -53,25 +53,49 @@ app.printUserAddress = function(count) {
 }
 app.processTweetData = function() {
   app.socket.on('data', function(tweet) {
-    var htmlStr = "<div class='tweet'>" +
-      "<span class='tweet_text'>" +
+    if( tweet.coordinates || tweet.place ){
+      var htmlStr = "<div class='tweet'>" +
+        "<span class='tweet_text'>" +
         "<strong>tweet: </strong> " + tweet.text +
         "<br>" +
-        "<em>tweeted @: " + tweet.created_at;
+        "<em>tweeted @:</em> " + tweet.created_at;
       if( tweet.coordinates ){
+        /*
+        coordinates: Array[2]
+          0: -118.49675061
+          1: 34.0148869
+        */
         htmlStr += "<br>" +
-        "<em>tweeted @: " + tweet.coordinates +
-        "</span>";
+          "<strong><em>tweeted from geocode:</em></strong> " + tweet.coordinates.coordinates[0] + ", " +
+          tweet.coordinates.coordinates[1];
       }
-    if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
-      htmlStr += "<br><span class='tweet_img'>" +
-        "<img src='" + tweet.entities.media[0].media_url + "'/>" +
-          "</span>" +
-        "</div><br><br>";
-    } else {
-      htmlStr += "</div><br><br>";
+      if( tweet.place ) {
+        /*
+        place: Object
+          attributes: Object
+          bounding_box: Object
+          country: "United States"
+          country_code: "US"
+          full_name: "Santa Monica, CA"
+          id: "59612bd882018c51"
+          name: "Santa Monica"
+          place_type: "city"
+        */
+        htmlStr += "<br>" +
+          "<strong><em>tweeted from place:</em></strong> " + tweet.place.full_name + ", " +
+          tweet.place.country;
+      }
+      htmlStr += "</span>";
+      if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
+        htmlStr += "<br><span class='tweet_img'>" +
+          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+            "</span>" +
+          "</div><br><br>";
+      } else {
+        htmlStr += "</div><br><br>";
+      }
+      $("#tweet_map").prepend(htmlStr);
     }
-    $("#tweet_map").prepend(htmlStr);
   });
 }
 /*app.processInstagramData = function() {
