@@ -7,8 +7,8 @@ app.user = {
 }
 app.socket = io.connect(window.location.hostname);
 app.init = function() {
-  app.fillMapHeight();
-  geolocator.locate( 
+  //app.fillMapHeight();
+  /*geolocator.locate( 
     app.onGeoSuccess,
     app.onGeoError,
     true,
@@ -18,7 +18,7 @@ app.init = function() {
       maximumAge: 0
     },
     null
-  );
+  );*/
   app.processTweetData();
   // app.processInstagramData();
 }
@@ -55,10 +55,16 @@ app.processTweetData = function() {
   app.socket.on('data', function(tweet) {
     var htmlStr = "<div class='tweet'>" +
       "<span class='tweet_text'>" +
-        "<strong>tweet:</strong> " + tweet.text +
-      "</span>";
+        "<strong>tweet: </strong> " + tweet.text +
+        "<br>" +
+        "<em>tweeted @: " + tweet.created_at;
+      if( tweet.coordinates ){
+        htmlStr += "<br>" +
+        "<em>tweeted @: " + tweet.coordinates +
+        "</span>";
+      }
     if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
-      htmlStr += "<span class='tweet_img'>" +
+      htmlStr += "<br><span class='tweet_img'>" +
         "<img src='" + tweet.entities.media[0].media_url + "'/>" +
           "</span>" +
         "</div><br><br>";
