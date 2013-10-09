@@ -20,6 +20,7 @@ app.init = function() {
     null
   );
   app.processTweetData();
+  app.processInstagramData();
 }
 app.fillMapHeight = function() {
   $("#container").css("height", $(window).height() - $('#container').offset().top - 40);
