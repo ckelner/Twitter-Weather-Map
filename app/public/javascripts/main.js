@@ -5,6 +5,11 @@ app.user = {
   address : "",
   addr : null
 }
+app.map = {};
+app.map.markers = [];
+app.map.openMarkers = [];
+//app.map.infowindows = [];
+//app.map.infowindowCounter = 0;
 app.socket = io.connect(window.location.hostname);
 app.init = function() {
   //app.fillMapHeight();
@@ -21,12 +26,14 @@ app.init = function() {
   );*/
   app.processTweetData();
   // app.processInstagramData();
+  app.fillMapHeight();
+  kelner_googleMaps.initialize();
 }
 app.fillMapHeight = function() {
-  $("#container").css("height", $(window).height() - $('#container').offset().top - 40);
-  $("#tweet_map").css("height", $(window).height() - $('#tweet_map').offset().top - 40);
+  $("#container").css("height", $(window).height() - $(window).height() / 2);
+  //$("#tweet_map").css("height", $(window).height() - $('#tweet_map').offset().top - 40);
   // why???
-  $("#tweet_map").css("top", "-10px");
+  //$("#tweet_map").css("top", "-10px");
 }
 app.onGeoSuccess = function(location) {
   app.user.lat = location.coords.latitude;
@@ -53,6 +60,7 @@ app.printUserAddress = function(count) {
 }
 app.processTweetData = function() {
   app.socket.on('data', function(tweet) {
+    var tweetLatLng = null;
     if( tweet.coordinates || tweet.place ){
       var htmlStr = "<div class='tweet'>" +
         "<span class='tweet_text'>" +
@@ -68,6 +76,7 @@ app.processTweetData = function() {
         htmlStr += "<br>" +
           "<strong><em>tweeted from geocode:</em></strong> " + tweet.coordinates.coordinates[0] + ", " +
           tweet.coordinates.coordinates[1];
+        tweetLatLng = new google.maps.LatLng(tweet.coordinates.coordinates[1],tweet.coordinates.coordinates[0]);
       }
       if( tweet.place ) {
         /*
@@ -84,6 +93,9 @@ app.processTweetData = function() {
         htmlStr += "<br>" +
           "<strong><em>tweeted from place:</em></strong> " + tweet.place.full_name + ", " +
           tweet.place.country;
+        if( !tweet.coordinates ){
+          app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr );
+        }
       }
       htmlStr += "</span>";
       /*
@@ -115,8 +127,46 @@ app.processTweetData = function() {
         htmlStr += "</div><br><br>";
       }
       $("#tweet_map").prepend(htmlStr);
+      if( tweet.coordinates ){
+        app.createMapMarker( htmlStr, tweetLatLng )
+      }
     }
   });
+}
+app.reverseGeoCodeAddress = function( address, htmlStr ) {
+  kelner_googleMaps.geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      app.createMapMarker( htmlStr, results[0].geometry.location )
+    } else {
+      console.log("Geocode was not successful for the following reason: " + status);
+    }
+  });
+}
+app.createMapMarker = function( htmlStr, tweetLatLng ) {
+  var infoWindow = new google.maps.InfoWindow;
+  infoWindow.setContent(htmlStr);
+  //app.map.infowindows[app.map.infowindowCounter] = infoWindow;
+  //app.map.infowindowCounter++;
+  var onMarkerClick = function() {
+    var len = app.map.openMarkers.length;
+    for(var i=0;i<len;i++){
+      var aMarker = app.map.openMarkers.pop();
+      aMarker.infoWindow.close();
+    }
+    var marker = this;
+    marker.infoWindow.open(kelner_googleMaps.map, marker);
+    app.map.openMarkers.push(marker);
+  };
+  google.maps.event.addListener(kelner_googleMaps.map, 'click', function() {
+    infoWindow.close();
+  });
+  var marker = new google.maps.Marker({
+    position: tweetLatLng,
+    map: kelner_googleMaps.map,
+    infoWindow: infoWindow
+  });
+  google.maps.event.addListener(marker, 'click', onMarkerClick);
+  app.map.markers.push(marker);
 }
 /*app.processInstagramData = function() {
   app.socket.on('firstShow', function (data) {
