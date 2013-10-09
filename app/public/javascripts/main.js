@@ -5,6 +5,7 @@ app.user = {
   address : "",
   addr : null
 }
+app.socket = io.connect(window.location.hostname);
 app.init = function() {
   app.fillMapHeight();
   geolocator.locate( 
@@ -50,8 +51,7 @@ app.printUserAddress = function(count) {
   }
 }
 app.processTweetData = function() {
-    var socket = io.connect(window.location.hostname);
-    socket.on('data', function(tweet) {
+    app.socket.on('data', function(tweet) {
       $("#tweet_map").prepend(
         "<div class='tweet'>" +
           "<span class='tweet_text'>" +
@@ -64,6 +64,20 @@ app.processTweetData = function() {
       );
     });
 }
+app.processInstagramData = function() {
+  app.socket.on('firstShow', function (data) {
+      $("#tweet_map").prepend(
+        "<div class='tweet'>" +
+          "<span class='tweet_text'>" +
+            "tweet: " + tweet.text +
+          "</span>" +
+          "<span class='tweet_img'>" +
+            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+          "</span>" +
+        "</div>"
+      );
+  });
+},
 // on ready
 $(document).ready(function() {
   app.init();
