@@ -72,7 +72,7 @@ app.processInstagramData = function() {
       $("#tweet_map").prepend(
         "<div class='tweet'>" +
           "<span class='tweet_text'>" +
-            "INSTAGRAM: " + data.firstShow[i].caption.text +
+            "INSTAGRAM: " + (data.firstShow[i].caption == null ? '' : data.firstShow[i].caption.text) +
           "</span>" +
           "<span class='tweet_img'>" +
             "<img src='" + data.firstShow[i].images.standard_resolution.url + "'/>" +
