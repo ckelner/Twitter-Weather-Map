@@ -2,5 +2,8 @@
     "twitter_consumer_key" : "foo",
     "twitter_consumer_secret" : "foo",
     "twitter_access_token_key" : "foo",
-    "twitter_access_token_secret" : "foo"
+    "twitter_access_token_secret" : "foo",
+    "instagram_client_id" : "bar",
+    "instagram_client_secret" : "bar",
+    "instagram_callback_url" : "bar"
 }

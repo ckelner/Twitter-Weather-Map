@@ -52,31 +52,34 @@ app.printUserAddress = function(count) {
   }
 }
 app.processTweetData = function() {
-    app.socket.on('data', function(tweet) {
-      $("#tweet_map").prepend(
-        "<div class='tweet'>" +
-          "<span class='tweet_text'>" +
-            "tweet: " + tweet.text +
-          "</span>" +
-          "<span class='tweet_img'>" +
-            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
-          "</span>" +
-        "</div>"
-      );
-    });
+  app.socket.on('data', function(tweet) {
+    $("#tweet_map").prepend(
+      "<div class='tweet'>" +
+        "<span class='tweet_text'>" +
+          "tweet: " + tweet.text +
+        "</span>" +
+        "<span class='tweet_img'>" +
+          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+        "</span>" +
+      "</div>"
+    );
+  });
 }
 app.processInstagramData = function() {
   app.socket.on('firstShow', function (data) {
+    var size = data.firstShow.length
+    for(int i=0;i<size;i++){
       $("#tweet_map").prepend(
         "<div class='tweet'>" +
           "<span class='tweet_text'>" +
-            "tweet: " + tweet.text +
+            "INSTAGRAM: " + data.firstShow[i].caption.text +
           "</span>" +
           "<span class='tweet_img'>" +
-            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+            "<img src='" + data.firstShow[i].images.standard_resolution.url + "'/>" +
           "</span>" +
         "</div>"
       );
+    }
   });
 },
 // on ready
