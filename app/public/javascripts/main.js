@@ -20,7 +20,7 @@ app.init = function() {
     null
   );
   app.processTweetData();
-  app.processInstagramData();
+  // app.processInstagramData();
 }
 app.fillMapHeight = function() {
   $("#container").css("height", $(window).height() - $('#container').offset().top - 40);
@@ -53,19 +53,22 @@ app.printUserAddress = function(count) {
 }
 app.processTweetData = function() {
   app.socket.on('data', function(tweet) {
-    $("#tweet_map").prepend(
-      "<div class='tweet'>" +
-        "<span class='tweet_text'>" +
-          "tweet: " + tweet.text +
-        "</span>" +
-        "<span class='tweet_img'>" +
-          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
-        "</span>" +
-      "</div>"
-    );
+    var htmlStr = "<div class='tweet'>" +
+      "<span class='tweet_text'>" +
+        "<strong>tweet:</strong> " + tweet.text +
+      "</span>";
+    if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
+      htmlStr += "<span class='tweet_img'>" +
+        "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+          "</span>" +
+        "</div><br><br>";
+    } else {
+      htmlStr += "</div><br><br>";
+    }
+    $("#tweet_map").prepend(htmlStr);
   });
 }
-app.processInstagramData = function() {
+/*app.processInstagramData = function() {
   app.socket.on('firstShow', function (data) {
     var size = data.firstShow.length
     for(var i=0;i<size;i++){
@@ -104,7 +107,7 @@ app.addInstaGramPhotos = function(text, img_url) {
       "</span>" +
     "</div>"
   );
-}
+}*/
 // on ready
 $(document).ready(function() {
   app.init();
