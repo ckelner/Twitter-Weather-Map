@@ -16,3 +16,6 @@ npm-debug.log
 app/config.json
 
 app/node_modules/*
+
+node_modules
+node_modules/*
