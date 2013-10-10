@@ -5,7 +5,7 @@ app.map.openMarkers = [];
 app.socket = io.connect(window.location.hostname);
 app.init = function() {
   app.fillMapHeight();
-  kelner_googleMaps.initialize();
+  app.googleMaps.initialize();
   app.loadTweetDataFromDB();
   app.setupTweetStreamSocket();
 }
@@ -98,7 +98,7 @@ app.processTweetData = function(tweet) {
 }
 // do reverse lookup of street address (twitter seems to only provide City, State/Province, Country)
 app.reverseGeoCodeAddress = function( address, htmlStr ) {
-  kelner_googleMaps.geocoder.geocode( { 'address': address}, function(results, status) {
+  app.googleMaps.geocoder.geocode( { 'address': address}, function(results, status) {
     // good to go - if this fails we can't map it, so just fuck it
     if (status == google.maps.GeocoderStatus.OK) {
       app.createMapMarker( htmlStr, results[0].geometry.location )
@@ -118,17 +118,17 @@ app.createMapMarker = function( htmlStr, tweetLatLng ) {
       aMarker.infoWindow.close();
     }
     var marker = this;
-    marker.infoWindow.open(kelner_googleMaps.map, marker);
+    marker.infoWindow.open(app.googleMaps.map, marker);
     // track this open marker so we can close it later
     app.map.openMarkers.push(marker);
   };
   // when the map is clicked anywhere that is not a map marker it will close the open one
-  google.maps.event.addListener(kelner_googleMaps.map, 'click', function() {
+  google.maps.event.addListener(app.googleMaps.map, 'click', function() {
     infoWindow.close();
   });
   var marker = new google.maps.Marker({
     position: tweetLatLng,
-    map: kelner_googleMaps.map,
+    map: app.googleMaps.map,
     infoWindow: infoWindow
   });
   google.maps.event.addListener(marker, 'click', onMarkerClick);
