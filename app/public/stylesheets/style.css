@@ -1,5 +1,5 @@
 body {
-  padding: 0px 50px;
+  padding: 0px 0px;
   margin: 0;
   height: 100%;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -24,9 +24,16 @@ p {
 #header #address {
   padding-left: 15px;
 }
+#parentcontainer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 #container {
-  position: absolute;
-  float: left;
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 50%;
 }
 #container, #tweet_map {
   /*width: 47%;*/
@@ -34,5 +41,4 @@ p {
 }
 #tweet_map {
   position: relative;
-  float: right;
 }
