@@ -17,6 +17,10 @@ body {
 #container, #tweet_map {
   width: 100%;
 }
+#tweet_map_highlights {
+  background-color: lightblue;
+  position: relative;
+}
 #tweet_map {
   position: relative;
 }

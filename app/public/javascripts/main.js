@@ -35,6 +35,8 @@ app.processTweetData = function(tweet) {
       "<span class='tweet_text'>" +
         "<strong>tweet: </strong> " + tweet.text +
         "<br>" +
+        "<strong>rank: </strong> " + tweet.ranking +
+        "<br>" +
         "<strong>tweeted on:</strong> " + tweet.created_at;
   // this is the preferred lat/lon object
   if( tweet.coordinates ){
@@ -89,7 +91,11 @@ app.processTweetData = function(tweet) {
   } else {
     htmlStr += "</div><br><br>";
   }
-  $("#tweet_map").prepend(htmlStr);
+  if(tweet.ranking && tweet.ranking >= 2) {
+    $("#tweet_map_highlights").prepend(htmlStr);
+  } else { 
+    $("#tweet_map").prepend(htmlStr);
+  }
   // this is only if coords were available, if we had to use 'place' then
   // the callpack for reverse geocoding lookup will create the map marker
   if( tweet.coordinates ){
