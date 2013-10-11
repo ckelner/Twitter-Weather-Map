@@ -16,48 +16,49 @@ app.loadTweetDataFromDB = function() {
   app.socket.on('firstShow', function (data) {
     var size = data.tweets.length
     for(var i=0;i<size;i++){
-      app.processTweetData(data.tweets[i]);
+      app.processTweetData(data.tweets[i], false);
     }
   });
 }
 app.setupTweetStreamSocket = function() {
   app.socket.on('data', function(tweet) {
-    app.processTweetData(tweet);
+    app.processTweetData(tweet, false);
   });
 }
-app.processTweetData = function(tweet) {
+// history is used for the slider - boolean true/false
+app.processTweetData = function(tweet, history) {
   if(!app.pause && tweet.user) {
     // lat lon location of the tweet
     var tweetLatLng = null;
     var tweetPlace = false;
     var htmlStr =
       "<div class='tweet'>" +
-        "<span class='tweet_text'>" +
-          "<strong>tweet: </strong> " +
-          "<a href='https://twitter.com/" + tweet.user.name + "/status/" + 
-          tweet.id_str + "' target=_blank>" + tweet.text + "</a>" +
-          "<br>" +
-          "<strong>rank: </strong> " + tweet.ranking +
-          "<br>";
-          if( tweet.wx ) {
-            if( tweet.wx.feelslike_f ) {
-              htmlStr += "<strong>wunder temp (faren): </strong> " + tweet.wx.feelslike_f +
-              "<br>";
-            }
-            if( tweet.wx.weather ) {
-              htmlStr += "<strong>wunder condition: </strong> " + tweet.wx.weather +
-              "<br>";
-            }
-          }
-          htmlStr += "<strong>tweeted on: </strong>" + tweet.created_at;
+      "<span class='tweet_text'>" +
+      "<strong>tweet: </strong> " +
+      "<a href='https://twitter.com/" + tweet.user.name + "/status/" + 
+      tweet.id_str + "' target=_blank>" + tweet.text + "</a>" +
+      "<br>" +
+      "<strong>rank: </strong> " + tweet.ranking +
+      "<br>";
+    if( tweet.wx ) {
+      if( tweet.wx.feelslike_f ) {
+        htmlStr += "<strong>wunder temp (faren): </strong> " + tweet.wx.feelslike_f +
+        "<br>";
+      }
+      if( tweet.wx.weather ) {
+        htmlStr += "<strong>wunder condition: </strong> " + tweet.wx.weather +
+        "<br>";
+      }
+    }
+    htmlStr += "<strong>tweeted on: </strong>" + tweet.created_at;
     // this is the preferred lat/lon object
     if( tweet.coordinates ){
       var WUMapUrl = app.createWUMapUrlLatLon(tweet.coordinates.coordinates[1], tweet.coordinates.coordinates[0]);
       htmlStr +=
         "<br>" +
         "<strong>tweeted from geocode:</strong> <a href='" + WUMapUrl + "' target=_blank>" +
-          tweet.coordinates.coordinates[1] + ", " + tweet.coordinates.coordinates[0] +
-          "</a>";
+        tweet.coordinates.coordinates[1] + ", " + tweet.coordinates.coordinates[0] +
+        "</a>";
       tweetLatLng = new google.maps.LatLng(
         tweet.coordinates.coordinates[1],
         tweet.coordinates.coordinates[0]
@@ -80,12 +81,12 @@ app.processTweetData = function(tweet) {
         var instaLen = tweet.instagram_urls.length;
         for(var o=0;o<instaLen;o++){
           htmlStr +=
-          "<br>" +
-          "<span class='tweet_img'>" +
+            "<br>" +
+            "<span class='tweet_img'>" +
             "Instagram photo: <br>" +
             "<img src='" + tweet.instagram_urls[o] + "'/>" +
-          "</span>" +
-          "<br>";
+            "</span>" +
+            "<br>";
         }
       }
       // is there a direct twitter upload photo we can display?
@@ -93,8 +94,8 @@ app.processTweetData = function(tweet) {
         htmlStr +=
           "<br>" +
           "<span class='tweet_img'>" +
-            "Twitter photo: <br>" +
-            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+          "Twitter photo: <br>" +
+          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
           "</span>" +
           "</div>" +
           "<br><br>";
@@ -104,22 +105,26 @@ app.processTweetData = function(tweet) {
     } else {
       htmlStr += "</div><br><br>";
     }
-    if(tweet.ranking && tweet.ranking >= 2) {
-      $("#tweet_map_highlights").prepend(htmlStr);
-    } else { 
-      $("#tweet_map").prepend(htmlStr);
-    }
-    // this is only if coords were available, if we had to use 'place' then
-    // the callpack for reverse geocoding lookup will create the map marker
-    if( tweet.coordinates ){
-      if(tweet.wx) {
-        app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, tweet.wx.icon_url)
-      } else {
-        app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, null)
+    if(!history) {
+      if(tweet.ranking && tweet.ranking >= 2) {
+        $("#tweet_map_highlights").prepend(htmlStr);
+      } else { 
+        $("#tweet_map").prepend(htmlStr);
       }
-    }
-    else if( tweetPlace ) {
-      app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+      // this is only if coords were available, if we had to use 'place' then
+      // the callpack for reverse geocoding lookup will create the map marker
+      if( tweet.coordinates ){
+        if(tweet.wx) {
+          app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, tweet.wx.icon_url)
+        } else {
+          app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, null)
+        }
+      }
+      else if( tweetPlace ) {
+        app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+      }
+    } else {
+      return htmlStr;
     }
   }
 }
@@ -144,7 +149,7 @@ app.createWUMapUrlLatLon = function ( lat, lon ) {
 }
 // creates a google map marker to plop down with an infowindow attached
 app.createMapMarker = function( htmlStr, tweetLatLng, created, icon_url ) {
-  var infoWindow = new google.maps.InfoWindow;
+  var infoWindow = new google.maps.InfoWindow();
   infoWindow.setContent(htmlStr);
   // action to perform when the marker gets clicked
   var onMarkerClick = function() {

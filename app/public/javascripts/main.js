@@ -44,13 +44,14 @@ app.initBigData = function() {
             tweet.coordinates.coordinates[1],
             tweet.coordinates.coordinates[0]
           );
-          app.createMapMarker( "", tweetLatLng, tweet.created_at );
+          var html = app.processTweetData(tweet, true);
+          app.createMapMarker( html, tweetLatLng, tweet.created_at, null );
           app.map.allMarkers.forEach( function(el) {
             el.setVisible(false);
           });
-          app.pause=true;
         }
       }
+      app.pause=true;
       $("#big_data").css( "background-color", "green" );
     }
   );
