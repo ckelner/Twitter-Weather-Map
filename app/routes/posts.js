@@ -32,6 +32,15 @@ exports.findRecent = function(req, res) {
 	});
 };
 
+exports.findAllInstagrams = function(req, res) {
+	db.collection('posts', function(err, collection) {
+		collection.find({instagram_urls: {$not: {$size: 0}, $exists: true}}).toArray(function(err, items) {
+			res.send(items);
+		});
+	});
+};
+
+
 exports.findAll = function(req, res) {
 	db.collection('posts', function(err, collection) {
 		collection.find().toArray(function(err, items) {
