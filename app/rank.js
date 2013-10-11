@@ -415,7 +415,7 @@ function wordMatchCount(tweet, target_tier) {
 
   for(var i=0; i < words.length; i++) {
     if(target_tier[words[i]]) {
-      console.log(words[i]);
+      //console.log(words[i]);
       count++;
     }
   }
@@ -455,7 +455,8 @@ function validateTweet(tweet) {
 }
 exports.validateTweet = validateTweet;
 
-
+/*
 console.log(validateTweet(sample_tweet));
 console.log(sample_tweet.text);
 console.log(rankTweet(sample_tweet, first_tier));
+*/
