@@ -26,7 +26,7 @@ exports.findRecent = function(req, res) {
         var start = new Date();
         start.setMinutes(start.getMinutes() - 15);
 	db.collection('posts', function(err, collection) {
-		collection.find({created_on: {$gte: start, $lt: end}}).toArray(function(err, items) {
+		collection.find({status: {$gte: start, $lt: end}}).toArray(function(err, items) {
 			res.send(items);
 		});
 	});
