@@ -3,6 +3,7 @@ app.googleMaps = {}
 // google overlay prototype
 app.googleMaps.geocoder = new google.maps.Geocoder();
 app.googleMaps.overlay = null;
+app.googleMaps.lastOverlay = null;
 
 app.googleMaps.initialize = function() {
   var ATL_lat = 33.756264;
@@ -18,14 +19,15 @@ app.googleMaps.initialize = function() {
   var weatherLayer = new google.maps.weather.WeatherLayer({
     temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
   });
+  weatherLayer.setMap(app.googleMaps.map);
   // redo overlay on map events
   google.maps.event.addListener(map, 'center_changed', function() {
-    app.googleMaps.loadOverlay();
+    //app.googleMaps.loadOverlay();
   });
   google.maps.event.addListener(map, 'bounds_changed', function() {
-    app.googleMaps.loadOverlay();
+    //app.googleMaps.loadOverlay();
   });
-  google.maps.event.addListener(map, 'drag', function() {
+  google.maps.event.addListener(map, 'dragend', function() {
     app.googleMaps.loadOverlay();
   });
   google.maps.event.addListener(map, 'resize', function() {
@@ -34,8 +36,8 @@ app.googleMaps.initialize = function() {
   google.maps.event.addListener(map, 'zoom_changed', function() {
     app.googleMaps.loadOverlay();
   });
-  weatherLayer.setMap(app.googleMaps.map);
   setTimeout(app.googleMaps.loadOverlay, 2000);
+  setInterval(app.googleMaps.loadOverlay, 5000);
 };
 
 app.googleMaps.loadOverlay = function() {
@@ -55,11 +57,37 @@ app.googleMaps.loadOverlay = function() {
     "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" +
     mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
     "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&reproj.automerc=1";
-  // remove current overlay
   if( app.googleMaps.overlay ) {
-    app.googleMaps.overlay.setMap(null);
+    app.googleMaps.lastOverlay = app.googleMaps.overlay;
   }
   app.googleMaps.overlay = new google.maps.GroundOverlay(img, map.getBounds());
   app.googleMaps.overlay.setMap(map);
   app.googleMaps.overlay.setOpacity(0.5);
+  // remove old overlay
+  if( app.googleMaps.lastOverlay ) {
+    setTimeout(app.googleMaps.removeOldOverlay,1000);
+  }
 };
+
+app.googleMaps.removeOldOverlay = function() {
+  app.googleMaps.lastOverlay.setMap(null);
+};
+
+app.googleMaps.removeMarkers = function() {
+  var len = app.map.allMarkers.length;
+  // close all the other open markers, this generally should just be one other one
+  for(var i=0;i<len;i++){
+    var aMarker = app.map.allMarkers.pop();
+    aMarker.setMap(null);
+  }
+  app.map.allMarkers = [];
+};
+
+app.googleMaps.closeOpenMarkers = function() {
+  var len = app.map.openMarkers.length;
+  // close all the other open markers, this generally should just be one other one
+  for(var i=0;i<len;i++){
+    var aMarker = app.map.openMarkers.pop();
+    aMarker.infoWindow.close();
+  }
+}
