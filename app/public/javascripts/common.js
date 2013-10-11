@@ -121,7 +121,12 @@ app.processTweetData = function(tweet, history) {
         }
       }
       else if( tweetPlace ) {
-        app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+        if(tweet.wx) {
+          //app.createMapMarker( htmlStr, tweet.latlng, tweet.created_at, tweet.wx.icon_url)
+          app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, tweet.wx.icon_url);
+        } else {
+          app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+        }
       }
     } else {
       return htmlStr;
@@ -129,11 +134,11 @@ app.processTweetData = function(tweet, history) {
   }
 }
 // do reverse lookup of street address (twitter seems to only provide City, State/Province, Country)
-app.reverseGeoCodeAddress = function( address, htmlStr, create ) {
+app.reverseGeoCodeAddress = function( address, htmlStr, create, icon_url ) {
   app.googleMaps.geocoder.geocode( { 'address': address}, function(results, status) {
     // good to go - if this fails we can't map it, so just fuck it
     if (status == google.maps.GeocoderStatus.OK) {
-      app.createMapMarker( htmlStr, results[0].geometry.location, create, null);
+      app.createMapMarker( htmlStr, results[0].geometry.location, create, icon_url);
     }
   });
 }

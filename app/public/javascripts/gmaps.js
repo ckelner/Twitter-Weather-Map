@@ -39,7 +39,7 @@ app.googleMaps.initialize = function() {
     app.googleMaps.loadOverlay();
   });
   //weatherLayer.setMap(app.googleMaps.map);
-  setInterval(app.googleMaps.loadOverlay, 5000);
+  setInterval(app.googleMaps.loadOverlay, 300000);
 };
 
 app.googleMaps.loadOverlay = function() {
