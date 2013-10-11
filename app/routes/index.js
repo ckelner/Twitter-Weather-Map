@@ -7,6 +7,14 @@ exports.index = function(req, res){
   );
 };
 
+exports.fullscreenmap = function(req, res){
+  res.render(
+    'fullscreenmap',
+    {
+      title: '#Weather Full Screen Map'
+    }
+  );
+};
 
 exports.rank = function(req, res){
   res.render(

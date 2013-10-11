@@ -12,7 +12,7 @@ app.init = function() {
 // sorry ass JS hack to set the map height to half the window size... 
 // 50% in css doesn't seem to work
 app.fillMapHeight = function() {
-  $("#container").css("height", $(window).height() - $(window).height() / 2);
+  $("#container").css("height", $(window).height());
 }
 app.loadTweetDataFromDB = function() {
   app.socket.on('firstShow', function (data) {
@@ -89,11 +89,6 @@ app.processTweetData = function(tweet) {
     }
   } else {
     htmlStr += "</div><br><br>";
-  }
-  if(tweet.ranking && tweet.ranking >= 2) {
-    $("#tweet_map_highlights").prepend(htmlStr);
-  } else { 
-    $("#tweet_map").prepend(htmlStr);
   }
   // this is only if coords were available, if we had to use 'place' then
   // the callpack for reverse geocoding lookup will create the map marker
