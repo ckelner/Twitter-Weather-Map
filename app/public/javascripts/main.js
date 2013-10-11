@@ -62,18 +62,16 @@ app.processTweetData = function(tweet) {
   }
   htmlStr += "</span>";
   if( tweet.entities ) {
-    // see if there is a link in there we can use
-    //TODO: go back and try to show this link if it is an image?
-    if( tweet.entities.urls && tweet.entities.urls.length > 0 ) {
-      if( tweet.entities.urls[0].expanded_url ) {
+    if( tweet.instagram_urls.length > 0 ) {
+      var instaLen = tweet.instagram_urls.length;
+      for(var o=0;o<instaLen;o++){
         htmlStr +=
         "<br>" +
-        "<span class='tweet_link'>" +
-          "<a href='" +tweet.entities.urls[0].expanded_url + "'>" +
-            tweet.entities.urls[0].expanded_url +
-          "</a>" +
+        "<span class='tweet_img'>" +
+          "Instagram photo: <br>" +
+          "<img src='" + tweet.instagram_urls[o] + "'/>" +
         "</span>" +
-        "<br><br>";
+        "<br>";
       }
     }
     // is there a direct twitter upload photo we can display?
@@ -81,6 +79,7 @@ app.processTweetData = function(tweet) {
       htmlStr +=
         "<br>" +
         "<span class='tweet_img'>" +
+          "Twitter photo: <br>" +
           "<img src='" + tweet.entities.media[0].media_url + "'/>" +
         "</span>" +
         "</div>" +

@@ -7,7 +7,6 @@ exports.index = function(req, res){
   );
 };
 
-
 exports.rank = function(req, res){
   res.render(
     'rank',
