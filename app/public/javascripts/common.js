@@ -5,7 +5,6 @@ app.map.openMarkers = [];
 app.map.allMarkers = [];
 app.socket = io.connect(window.location.hostname);
 app.init = function() {
-  app.fillMapHeight();
   app.googleMaps.initialize();
   app.loadTweetDataFromDB();
   app.setupTweetStreamSocket();
@@ -24,9 +23,10 @@ app.setupTweetStreamSocket = function() {
   });
 }
 app.processTweetData = function(tweet) {
-  if(!app.pause) {
+  if(!app.pause && tweet.user) {
     // lat lon location of the tweet
     var tweetLatLng = null;
+    var tweetPlace = false;
     var htmlStr =
       "<div class='tweet'>" +
         "<span class='tweet_text'>" +
@@ -68,12 +68,12 @@ app.processTweetData = function(tweet) {
         tweet.place.full_name + ", " + tweet.place.country;
       // only need to try to get the lat/lon if we don't have it already
       if( !tweet.coordinates ){
-        app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr );
+        tweetPlace = true;
       }
     }
     htmlStr += "</span>";
     if( tweet.entities ) {
-      if( tweet.instagram_urls.length > 0 ) {
+      if( tweet.instagram_urls && tweet.instagram_urls.length > 0 ) {
         var instaLen = tweet.instagram_urls.length;
         for(var o=0;o<instaLen;o++){
           htmlStr +=
@@ -109,16 +109,19 @@ app.processTweetData = function(tweet) {
     // this is only if coords were available, if we had to use 'place' then
     // the callpack for reverse geocoding lookup will create the map marker
     if( tweet.coordinates ){
-      app.createMapMarker( htmlStr, tweetLatLng )
+      app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at );
+    }
+    else if( tweetPlace ) {
+      app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at );
     }
   }
 }
 // do reverse lookup of street address (twitter seems to only provide City, State/Province, Country)
-app.reverseGeoCodeAddress = function( address, htmlStr ) {
+app.reverseGeoCodeAddress = function( address, htmlStr, create ) {
   app.googleMaps.geocoder.geocode( { 'address': address}, function(results, status) {
     // good to go - if this fails we can't map it, so just fuck it
     if (status == google.maps.GeocoderStatus.OK) {
-      app.createMapMarker( htmlStr, results[0].geometry.location )
+      app.createMapMarker( htmlStr, results[0].geometry.location, create )
     }
   });
 }
@@ -133,7 +136,7 @@ app.createWUMapUrlLatLon = function ( lat, lon ) {
   "&tl.play=0&tl.spd=2&viewportstart=now-14432&viewportend=now-32&groupSevere=1&groupHurricane=1&groupFire=1&groupCamsPhotos=1&groupRealEstate=1&eyedropper=0&extremes=0&fault=0&favs=0&femaflood=0&fire=0&firewfas=0&fissures=0&fronts=0&hurrevac=0&hur=0&labels=0&lightning=0&livesurge=0&mm=0&ndfd=0&rad=1&rad.num=1&rad.spd=25&rad.opa=70&rad.type=00Q&rad.type2=&rad.smo=1&sat=1&sat.num=1&sat.spd=25&sat.opa=85&sat.gtt1=109&sat.gtt2=109&sat.type=IR4&wxsn=1&wxsn.mode=temp&wxsn.opa=50&wxsn.showpws=1";
 }
 // creates a google map marker to plop down with an infowindow attached
-app.createMapMarker = function( htmlStr, tweetLatLng ) {
+app.createMapMarker = function( htmlStr, tweetLatLng, created ) {
   var infoWindow = new google.maps.InfoWindow;
   infoWindow.setContent(htmlStr);
   // action to perform when the marker gets clicked
@@ -153,6 +156,7 @@ app.createMapMarker = function( htmlStr, tweetLatLng ) {
     map: app.googleMaps.map,
     infoWindow: infoWindow
   });
+  marker.created_at = created;
   google.maps.event.addListener(marker, 'click', onMarkerClick);
   app.map.allMarkers.push(marker);
 }

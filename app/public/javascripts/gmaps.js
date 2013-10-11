@@ -3,7 +3,7 @@ app.googleMaps = {}
 // google overlay prototype
 app.googleMaps.geocoder = new google.maps.Geocoder();
 app.googleMaps.overlay = null;
-app.googleMaps.lastOverlay = null;
+app.googleMaps.lastOverlay = [];
 
 app.googleMaps.initialize = function() {
   var ATL_lat = 33.756264;
@@ -22,10 +22,10 @@ app.googleMaps.initialize = function() {
   weatherLayer.setMap(app.googleMaps.map);
   // redo overlay on map events
   google.maps.event.addListener(map, 'center_changed', function() {
-    //app.googleMaps.loadOverlay();
+    app.googleMaps.loadOverlay();
   });
   google.maps.event.addListener(map, 'bounds_changed', function() {
-    //app.googleMaps.loadOverlay();
+    app.googleMaps.loadOverlay();
   });
   google.maps.event.addListener(map, 'dragend', function() {
     app.googleMaps.loadOverlay();
@@ -36,7 +36,6 @@ app.googleMaps.initialize = function() {
   google.maps.event.addListener(map, 'zoom_changed', function() {
     app.googleMaps.loadOverlay();
   });
-  setTimeout(app.googleMaps.loadOverlay, 2000);
   setInterval(app.googleMaps.loadOverlay, 5000);
 };
 
@@ -58,19 +57,21 @@ app.googleMaps.loadOverlay = function() {
     mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
     "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&reproj.automerc=1";
   if( app.googleMaps.overlay ) {
-    app.googleMaps.lastOverlay = app.googleMaps.overlay;
+    app.googleMaps.lastOverlay.push(app.googleMaps.overlay);
   }
   app.googleMaps.overlay = new google.maps.GroundOverlay(img, map.getBounds());
   app.googleMaps.overlay.setMap(map);
   app.googleMaps.overlay.setOpacity(0.5);
   // remove old overlay
-  if( app.googleMaps.lastOverlay ) {
-    setTimeout(app.googleMaps.removeOldOverlay,1000);
-  }
+  setTimeout(app.googleMaps.removeOldOverlay,1000);
 };
 
 app.googleMaps.removeOldOverlay = function() {
-  app.googleMaps.lastOverlay.setMap(null);
+  var overLen = app.googleMaps.lastOverlay.length;
+  for(var q=0;q<overLen;q++) {
+    app.googleMaps.lastOverlay[q].setMap(null);
+  }
+  app.googleMaps.lastOverlay = [];
 };
 
 app.googleMaps.removeMarkers = function() {
