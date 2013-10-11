@@ -68,8 +68,8 @@ app.initSlider = function() {
         var min = vals.min;
         var max = vals.max;
         var curDate = new Date();
-        var minOldTime = new Date(curDate.getTime() - (min * 1000));
-        var maxOldTime = new Date(curDate.getTime() - (max * 1000));
+        var minOldTime = new Date(curDate.getTime() - (min * 1000 * 60));
+        var maxOldTime = new Date(curDate.getTime() - (max * 1000 * 60));
         app.map.allMarkers.forEach( function(el) {
           var createdAt = el.created_at;
           var markerDate = new Date(createdAt);

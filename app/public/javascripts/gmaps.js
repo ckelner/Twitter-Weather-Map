@@ -66,7 +66,7 @@ app.googleMaps.loadOverlay = function() {
   if( app.googleMaps.overlay ) {
     app.googleMaps.lastOverlay.push(app.googleMaps.overlay);
   }
-  app.googleMaps.overlay = new google.maps.GroundOverlay(img, map.getBounds());
+  app.googleMaps.overlay = new google.maps.GroundOverlay(irImg, map.getBounds());
   app.googleMaps.overlay.setMap(map);
   app.googleMaps.overlay.setOpacity(0.5);
   // remove old overlay
