@@ -3,6 +3,7 @@ app.googleMaps = {}
 // google overlay prototype
 app.googleMaps.geocoder = new google.maps.Geocoder();
 app.googleMaps.overlay = null;
+app.googleMaps.ir_Overlay = null;
 app.googleMaps.lastOverlay = [];
 
 app.googleMaps.initialize = function() {
@@ -10,7 +11,7 @@ app.googleMaps.initialize = function() {
   var ATL_lon = -84.385179;
   var mapOptions = {
     center: new google.maps.LatLng(ATL_lat,ATL_lon),
-    zoom: 10, // far out
+    zoom: 2, // far out
     mapTypeId: google.maps.MapTypeId.ROADMAP
   };
   var map = new google.maps.Map(document.getElementById("container"), mapOptions);
@@ -54,6 +55,10 @@ app.googleMaps.loadOverlay = function() {
     mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
     "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&num=6";
   */
+  var irImg = "http://api.wunderground.com/api/ba3cc8d32973ec43/satellite/image.png?" +
+  "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" + mapSW.lat() + 
+  "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth + "&height=" + mapDiv.offsetHeight +
+  "&key=sat_ir4&basemap=0";
   var img = "http://api.wunderground.com/api/ba3cc8d32973ec43/radar/image.gif?" +
     "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" +
     mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +

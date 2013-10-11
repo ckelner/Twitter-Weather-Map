@@ -57,23 +57,25 @@ app.initBigData = function() {
 }
 app.initSlider = function() {
   $(function() {
-    app.sliderDiv = $( "#slider" );
-    app.sliderDiv.slider();
-    app.sliderDiv.slider( "option", "min", 10 );
-    app.sliderDiv.slider( "option", "max", 60 * 24 );
-    app.sliderDiv.slider( "option", "step", 5 );
-    app.sliderDiv.slider( "option", "value", 5 );
-    app.sliderDiv.on( "slidechange",
+    app.sliderDiv = $("#slider");
+    app.sliderDiv.rangeSlider();
+    app.sliderDiv.rangeSlider("option", "bounds", {min: 15, max: (24*60)});
+    app.sliderDiv.rangeSlider("option", "defaultValues", {min: 15, max: 30});
+    app.sliderDiv.on( "valuesChanging",
       function( event, ui ) {
-        var val = app.sliderDiv.slider("value");
+        var vals = app.sliderDiv.rangeSlider("values");
+        var min = vals.min;
+        var max = vals.max;
         var curDate = new Date();
-        var oldTime = new Date(curDate.getTime() - (val * 60 * 1000));
+        var minOldTime = new Date(curDate.getTime() - (min * 1000));
+        var maxOldTime = new Date(curDate.getTime() - (max * 1000));
         app.map.allMarkers.forEach( function(el) {
           var createdAt = el.created_at;
           var markerDate = new Date(createdAt);
-          var oldMS = oldTime.getTime();
+          var minOldMS = minOldTime.getTime();
+          var maxOldMS = maxOldTime.getTime();
           var markMS = markerDate.getTime();
-          if(markMS > oldMS) {
+          if(markMS <= minOldMS && markMS >= maxOldMS) {
             el.setVisible(true);
           } else {
             el.setVisible(false);
