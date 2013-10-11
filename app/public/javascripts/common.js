@@ -63,6 +63,9 @@ app.processTweetData = function(tweet, history) {
         tweet.coordinates.coordinates[1],
         tweet.coordinates.coordinates[0]
       );
+      if(tweet.coordinates.coordinates[1]==0 && tweet.coordinates.coordinates[0]==0){
+        return;
+      }
     }
     // human readable location, ex: Atlanta, Georgia United States
     if( tweet.place ) {
@@ -117,7 +120,8 @@ app.processTweetData = function(tweet, history) {
         if(tweet.wx) {
           app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, tweet.wx.icon_url)
         } else {
-          app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, null)
+          // app.createMapMarker( htmlStr, tweetLatLng, tweet.created_at, null)
+          return;
         }
       }
       else if( tweetPlace ) {
@@ -125,7 +129,8 @@ app.processTweetData = function(tweet, history) {
           //app.createMapMarker( htmlStr, tweet.latlng, tweet.created_at, tweet.wx.icon_url)
           app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, tweet.wx.icon_url);
         } else {
-          app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+          //app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+          return;
         }
       }
     } else {

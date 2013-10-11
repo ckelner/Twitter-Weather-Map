@@ -55,18 +55,22 @@ app.googleMaps.loadOverlay = function() {
     mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
     "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&num=6";
   */
-  var irImg = "http://api.wunderground.com/api/ba3cc8d32973ec43/satellite/image.png?" +
-  "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" + mapSW.lat() + 
-  "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth + "&height=" + mapDiv.offsetHeight +
-  "&key=sat_ir4&basemap=0";
-  var img = "http://api.wunderground.com/api/ba3cc8d32973ec43/radar/image.gif?" +
-    "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" +
-    mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
-    "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&reproj.automerc=1";
+  var img = null;
+  if( app.radar ) {
+    img = "http://api.wunderground.com/api/ba3cc8d32973ec43/radar/image.gif?" +
+      "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" +
+      mapSW.lat() + "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth +
+      "&height=" + mapDiv.offsetHeight + "&newmaps=0&rainsnow=1&smooth=1&noclutter=1&reproj.automerc=1";
+  } else {
+    img = "http://api.wunderground.com/api/ba3cc8d32973ec43/satellite/image.png?" +
+      "maxlat=" + mapNE.lat() + "&maxlon=" + mapNE.lng() + "&minlat=" + mapSW.lat() + 
+      "&minlon=" + mapSW.lng() + "&width=" + mapDiv.offsetWidth + "&height=" + mapDiv.offsetHeight +
+      "&key=sat_ir4&basemap=0";
+  }
   if( app.googleMaps.overlay ) {
     app.googleMaps.lastOverlay.push(app.googleMaps.overlay);
   }
-  app.googleMaps.overlay = new google.maps.GroundOverlay(irImg, map.getBounds());
+  app.googleMaps.overlay = new google.maps.GroundOverlay(img, map.getBounds());
   app.googleMaps.overlay.setMap(map);
   app.googleMaps.overlay.setOpacity(0.5);
   // remove old overlay

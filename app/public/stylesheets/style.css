@@ -40,3 +40,10 @@ body {
   height: 20px;
   border: 1px dotted black;
 }
+#toggle_radar {
+  position: fixed;
+  width: 25px;
+  height: 22px;
+  bottom: 0px;
+  right: 82px;
+}

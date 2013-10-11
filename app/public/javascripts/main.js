@@ -1,5 +1,6 @@
 app.pause = false;
 app.sliderDiv = null;
+app.radar=true;
 app.init = function() {
   app.fillMapHeight();
   app.googleMaps.initialize();
@@ -8,6 +9,13 @@ app.init = function() {
   app.pausePlayDiv();
   app.initBigDataDiv();
   app.initSlider();
+  app.setupRadarButtonToggle();
+}
+app.setupRadarButtonToggle = function() {
+  $("#toggle_button").click(function() {
+    app.radar = (app.radar == false ? true : false)
+    app.googleMaps.loadOverlay();
+  });
 }
 app.pausePlayDiv = function() {
   $("#pause_play").click(function() {
