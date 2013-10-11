@@ -5,6 +5,7 @@ app.init = function() {
   app.loadTweetDataFromDB();
   app.setupTweetStreamSocket();
   app.pausePlayDiv();
+  app.initSlider();
 }
 app.pausePlayDiv = function() {
   $("#pause_play").click(function() {
@@ -20,4 +21,9 @@ app.pausePlayDiv = function() {
 // 50% in css doesn't seem to work
 app.fillMapHeight = function() {
   $("#container").css("height", $(window).height() - $(window).height() / 2);
+}
+app.initSlider = function() {
+  $(function() {
+    $( "#slider" ).slider();
+  });
 }

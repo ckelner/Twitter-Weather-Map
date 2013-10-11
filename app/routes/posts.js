@@ -9,10 +9,10 @@ exports.findById = function(req, res) {
 };
 
 exports.findByPastMinutes = function(req, res) {
-	var minutes = req.params.minutes;
-        var end = new Date();
-        var start = new Date();
-        start.setMinutes(start.getMinutes() - minutes);
+  var minutes = req.params.minutes;
+  var end = new Date();
+  var start = new Date();
+  start.setMinutes(start.getMinutes() - minutes);
 	db.collection('posts', function(err, collection) {
 		collection.find({status: {$gte: start, $lt: end}}).toArray(function(err, items) {
 			res.send(items);
@@ -20,11 +20,10 @@ exports.findByPastMinutes = function(req, res) {
 	});
 };
 
-
 exports.findRecent = function(req, res) {
-        var end = new Date();
-        var start = new Date();
-        start.setMinutes(start.getMinutes() - 15);
+  var end = new Date();
+  var start = new Date();
+  start.setMinutes(start.getMinutes() - 15);
 	db.collection('posts', function(err, collection) {
 		collection.find({status: {$gte: start, $lt: end}}).toArray(function(err, items) {
 			res.send(items);
