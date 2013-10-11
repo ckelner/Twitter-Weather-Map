@@ -116,7 +116,11 @@ app.processTweetData = function(tweet) {
       }
     }
     else if( tweetPlace ) {
-      app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr, tweet.created_at, null);
+      if(tweet.wx) {
+        app.createMapMarker( htmlStr, tweet.latlng, tweet.created_at, tweet.wx.icon_url)
+      } else {
+        app.createMapMarker( htmlStr, tweet.latlng, tweet.created_at, null)
+      }
     }
   }
 }
