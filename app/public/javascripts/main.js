@@ -3,11 +3,23 @@ app.map = {};
 // for tracking maps markers
 app.map.openMarkers = [];
 app.socket = io.connect(window.location.hostname);
+app.pause = false;
 app.init = function() {
   app.fillMapHeight();
   app.googleMaps.initialize();
   app.loadTweetDataFromDB();
   app.setupTweetStreamSocket();
+  app.pausePlayDiv();
+}
+app.pausePlayDiv = function() {
+  $("#pause_play").click(function() {
+    app.pause = (app.pause == false ? true : false)
+    if( app.pause ) {
+      $("#pause_play").css( "background-color", "red" );
+    } else {
+      $("#pause_play").css( "background-color", "green" );
+    }
+  });
 }
 // sorry ass JS hack to set the map height to half the window size... 
 // 50% in css doesn't seem to work
@@ -28,77 +40,79 @@ app.setupTweetStreamSocket = function() {
   });
 }
 app.processTweetData = function(tweet) {
-  // lat lon location of the tweet
-  var tweetLatLng = null;
-  var htmlStr =
-    "<div class='tweet'>" +
-      "<span class='tweet_text'>" +
-        "<strong>tweet: </strong> " + tweet.text +
-        "<br>" +
-        "<strong>rank: </strong> " + tweet.ranking +
-        "<br>" +
-        "<strong>tweeted on:</strong> " + tweet.created_at;
-  // this is the preferred lat/lon object
-  if( tweet.coordinates ){
-    htmlStr +=
-      "<br>" +
-      "<strong>tweeted from geocode:</strong> " +
-        tweet.coordinates.coordinates[0] + ", " + tweet.coordinates.coordinates[1];
-    tweetLatLng = new google.maps.LatLng(
-      tweet.coordinates.coordinates[1],
-      tweet.coordinates.coordinates[0]
-    );
-  }
-  // human readable location, ex: Atlanta, Georgia United States
-  if( tweet.place ) {
-    htmlStr +=
-      "<br>" +
-      "<strong>tweeted from place:</strong> " +
-      tweet.place.full_name + ", " + tweet.place.country;
-    // only need to try to get the lat/lon if we don't have it already
-    if( !tweet.coordinates ){
-      app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr );
-    }
-  }
-  htmlStr += "</span>";
-  if( tweet.entities ) {
-    if( tweet.instagram_urls.length > 0 ) {
-      var instaLen = tweet.instagram_urls.length;
-      for(var o=0;o<instaLen;o++){
-        htmlStr +=
-        "<br>" +
-        "<span class='tweet_img'>" +
-          "Instagram photo: <br>" +
-          "<img src='" + tweet.instagram_urls[o] + "'/>" +
-        "</span>" +
-        "<br>";
-      }
-    }
-    // is there a direct twitter upload photo we can display?
-    if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
+  if(!app.pause) {
+    // lat lon location of the tweet
+    var tweetLatLng = null;
+    var htmlStr =
+      "<div class='tweet'>" +
+        "<span class='tweet_text'>" +
+          "<strong>tweet: </strong> " + tweet.text +
+          "<br>" +
+          "<strong>rank: </strong> " + tweet.ranking +
+          "<br>" +
+          "<strong>tweeted on:</strong> " + tweet.created_at;
+    // this is the preferred lat/lon object
+    if( tweet.coordinates ){
       htmlStr +=
         "<br>" +
-        "<span class='tweet_img'>" +
-          "Twitter photo: <br>" +
-          "<img src='" + tweet.entities.media[0].media_url + "'/>" +
-        "</span>" +
-        "</div>" +
-        "<br><br>";
+        "<strong>tweeted from geocode:</strong> " +
+          tweet.coordinates.coordinates[0] + ", " + tweet.coordinates.coordinates[1];
+      tweetLatLng = new google.maps.LatLng(
+        tweet.coordinates.coordinates[1],
+        tweet.coordinates.coordinates[0]
+      );
+    }
+    // human readable location, ex: Atlanta, Georgia United States
+    if( tweet.place ) {
+      htmlStr +=
+        "<br>" +
+        "<strong>tweeted from place:</strong> " +
+        tweet.place.full_name + ", " + tweet.place.country;
+      // only need to try to get the lat/lon if we don't have it already
+      if( !tweet.coordinates ){
+        app.reverseGeoCodeAddress( tweet.place.full_name + ", " + tweet.place.country, htmlStr );
+      }
+    }
+    htmlStr += "</span>";
+    if( tweet.entities ) {
+      if( tweet.instagram_urls.length > 0 ) {
+        var instaLen = tweet.instagram_urls.length;
+        for(var o=0;o<instaLen;o++){
+          htmlStr +=
+          "<br>" +
+          "<span class='tweet_img'>" +
+            "Instagram photo: <br>" +
+            "<img src='" + tweet.instagram_urls[o] + "'/>" +
+          "</span>" +
+          "<br>";
+        }
+      }
+      // is there a direct twitter upload photo we can display?
+      if( tweet.entities.media != null && tweet.entities.media.length > 0 ) {
+        htmlStr +=
+          "<br>" +
+          "<span class='tweet_img'>" +
+            "Twitter photo: <br>" +
+            "<img src='" + tweet.entities.media[0].media_url + "'/>" +
+          "</span>" +
+          "</div>" +
+          "<br><br>";
+      } else {
+        htmlStr += "</div><br><br>";
+      }
     } else {
       htmlStr += "</div><br><br>";
     }
-  } else {
-    htmlStr += "</div><br><br>";
-  }
-  if(tweet.ranking && tweet.ranking >= 2) {
-    $("#tweet_map_highlights").prepend(htmlStr);
-  } else { 
-    $("#tweet_map").prepend(htmlStr);
-  }
-  // this is only if coords were available, if we had to use 'place' then
-  // the callpack for reverse geocoding lookup will create the map marker
-  if( tweet.coordinates ){
-    app.createMapMarker( htmlStr, tweetLatLng )
+    if(tweet.ranking && tweet.ranking >= 2) {
+      $("#tweet_map_highlights").prepend(htmlStr);
+    } else { 
+      $("#tweet_map").prepend(htmlStr);
+    }
+    // this is only if coords were available, if we had to use 'place' then
+    // the callpack for reverse geocoding lookup will create the map marker
+    if( tweet.coordinates ){
+      app.createMapMarker( htmlStr, tweetLatLng )
+    }
   }
 }
 // do reverse lookup of street address (twitter seems to only provide City, State/Province, Country)
