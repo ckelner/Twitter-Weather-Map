@@ -34,8 +34,18 @@ app.processTweetData = function(tweet) {
           tweet.id_str + "' target=_blank>" + tweet.text + "</a>" +
           "<br>" +
           "<strong>rank: </strong> " + tweet.ranking +
-          "<br>" +
-          "<strong>tweeted on:</strong> " + tweet.created_at;
+          "<br>";
+          if( tweet.wx ) {
+            if( tweet.wx.feelslike_f ) {
+              htmlStr += "<strong>wunder temp (faren): </strong> " + tweet.wx.feelslike_f +
+              "<br>";
+            }
+            if( tweet.wx.weather ) {
+              htmlStr += "<strong>wunder condition: </strong> " + tweet.wx.weather +
+              "<br>";
+            }
+          }
+          htmlStr += "<strong>tweeted on: </strong>" + tweet.created_at;
     // this is the preferred lat/lon object
     if( tweet.coordinates ){
       var WUMapUrl = app.createWUMapUrlLatLon(tweet.coordinates.coordinates[1], tweet.coordinates.coordinates[0]);
