@@ -25,7 +25,7 @@ body {
   position: relative;
 }
 #pause_play {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   right: 0px;
   width: 20px;

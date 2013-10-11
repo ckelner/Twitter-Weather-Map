@@ -53,10 +53,12 @@ app.processTweetData = function(tweet) {
           "<strong>tweeted on:</strong> " + tweet.created_at;
     // this is the preferred lat/lon object
     if( tweet.coordinates ){
+      var WUMapUrl = app.createWUMapUrlLatLon(tweet.coordinates.coordinates[1], tweet.coordinates.coordinates[0]);
       htmlStr +=
         "<br>" +
-        "<strong>tweeted from geocode:</strong> " +
-          tweet.coordinates.coordinates[0] + ", " + tweet.coordinates.coordinates[1];
+        "<strong>tweeted from geocode:</strong> <a href='" + WUMapUrl + "'>" +
+          tweet.coordinates.coordinates[1] + ", " + tweet.coordinates.coordinates[0] +
+          "</a>";
       tweetLatLng = new google.maps.LatLng(
         tweet.coordinates.coordinates[1],
         tweet.coordinates.coordinates[0]
@@ -123,6 +125,16 @@ app.reverseGeoCodeAddress = function( address, htmlStr ) {
       app.createMapMarker( htmlStr, results[0].geometry.location )
     }
   });
+}
+app.createWUMapUrlLatLon = function ( lat, lon ) {
+  return "http://www.wunderground.com/wundermap/?" +
+  "lat=" + lat +
+  "&lon=" + lon +
+  "&zoom=6&type=hybrid&units=english" +
+  "&pin=%20" +
+  "&plat=" + lat +
+  "&plon=" + lon +
+  "&tl.play=0&tl.spd=2&viewportstart=now-14432&viewportend=now-32&groupSevere=1&groupHurricane=1&groupFire=1&groupCamsPhotos=1&groupRealEstate=1&eyedropper=0&extremes=0&fault=0&favs=0&femaflood=0&fire=0&firewfas=0&fissures=0&fronts=0&hurrevac=0&hur=0&labels=0&lightning=0&livesurge=0&mm=0&ndfd=0&rad=1&rad.num=1&rad.spd=25&rad.opa=70&rad.type=00Q&rad.type2=&rad.smo=1&sat=1&sat.num=1&sat.spd=25&sat.opa=85&sat.gtt1=109&sat.gtt2=109&sat.type=IR4&wxsn=1&wxsn.mode=temp&wxsn.opa=50&wxsn.showpws=1";
 }
 // creates a google map marker to plop down with an infowindow attached
 app.createMapMarker = function( htmlStr, tweetLatLng ) {
