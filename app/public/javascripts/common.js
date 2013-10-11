@@ -2,6 +2,7 @@ var app = {};
 app.map = {};
 // for tracking maps markers
 app.map.openMarkers = [];
+app.map.allMarkers = [];
 app.socket = io.connect(window.location.hostname);
 app.init = function() {
   app.fillMapHeight();
@@ -137,12 +138,7 @@ app.createMapMarker = function( htmlStr, tweetLatLng ) {
   infoWindow.setContent(htmlStr);
   // action to perform when the marker gets clicked
   var onMarkerClick = function() {
-    var len = app.map.openMarkers.length;
-    // close all the other open markers, this generally should just be one other one
-    for(var i=0;i<len;i++){
-      var aMarker = app.map.openMarkers.pop();
-      aMarker.infoWindow.close();
-    }
+    app.googleMaps.closeOpenMarkers();
     var marker = this;
     marker.infoWindow.open(app.googleMaps.map, marker);
     // track this open marker so we can close it later
@@ -158,6 +154,7 @@ app.createMapMarker = function( htmlStr, tweetLatLng ) {
     infoWindow: infoWindow
   });
   google.maps.event.addListener(marker, 'click', onMarkerClick);
+  app.map.allMarkers.push(marker);
 }
 // on ready
 $(document).ready(function() {

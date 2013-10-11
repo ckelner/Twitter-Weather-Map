@@ -1,4 +1,5 @@
 app.pause = false;
+app.sliderDiv = null;
 app.init = function() {
   app.fillMapHeight();
   app.googleMaps.initialize();
@@ -24,6 +25,26 @@ app.fillMapHeight = function() {
 }
 app.initSlider = function() {
   $(function() {
-    $( "#slider" ).slider();
+    app.sliderDiv = $( "#slider" );
+    app.sliderDiv.slider();
+    app.sliderDiv.slider( "option", "min", 10 );
+    app.sliderDiv.slider( "option", "max", 60 * 24 );
+    app.sliderDiv.slider( "option", "step", 5 );
+    app.sliderDiv.slider( "option", "value", 5 );
+    app.sliderDiv.on( "slidechange",
+      function( event, ui ) {
+        var val = app.sliderDiv.slider( "value" );
+        $.ajax( "/recentposts/" + val ).done(
+          function( data ) {
+            app.googleMaps.closeOpenMarkers();
+            app.googleMaps.removeMarkers();
+            var dataLen = data.length;
+            for(var y=0;y<dataLen;y++) {
+              app.processTweetData(data[y]);
+            }
+          }
+        );
+      }
+    );
   });
 }

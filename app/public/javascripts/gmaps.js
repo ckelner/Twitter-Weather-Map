@@ -19,6 +19,7 @@ app.googleMaps.initialize = function() {
   var weatherLayer = new google.maps.weather.WeatherLayer({
     temperatureUnits: google.maps.weather.TemperatureUnit.FAHRENHEIT
   });
+  weatherLayer.setMap(app.googleMaps.map);
   // redo overlay on map events
   google.maps.event.addListener(map, 'center_changed', function() {
     //app.googleMaps.loadOverlay();
@@ -35,7 +36,6 @@ app.googleMaps.initialize = function() {
   google.maps.event.addListener(map, 'zoom_changed', function() {
     app.googleMaps.loadOverlay();
   });
-  weatherLayer.setMap(app.googleMaps.map);
   setTimeout(app.googleMaps.loadOverlay, 2000);
   setInterval(app.googleMaps.loadOverlay, 5000);
 };
@@ -71,4 +71,23 @@ app.googleMaps.loadOverlay = function() {
 
 app.googleMaps.removeOldOverlay = function() {
   app.googleMaps.lastOverlay.setMap(null);
+};
+
+app.googleMaps.removeMarkers = function() {
+  var len = app.map.allMarkers.length;
+  // close all the other open markers, this generally should just be one other one
+  for(var i=0;i<len;i++){
+    var aMarker = app.map.allMarkers.pop();
+    aMarker.setMap(null);
+  }
+  app.map.allMarkers = [];
+};
+
+app.googleMaps.closeOpenMarkers = function() {
+  var len = app.map.openMarkers.length;
+  // close all the other open markers, this generally should just be one other one
+  for(var i=0;i<len;i++){
+    var aMarker = app.map.openMarkers.pop();
+    aMarker.infoWindow.close();
+  }
 }
