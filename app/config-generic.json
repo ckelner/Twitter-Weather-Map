@@ -5,6 +5,6 @@
     "twitter_access_token_secret" : "foo",
     "instagram_client_id" : "bar",
     "instagram_client_secret" : "bar",
-    "instagram_callback_url" : "bar"
+    "instagram_callback_url" : "bar",
     "wuAPI" : "doo"
 }
